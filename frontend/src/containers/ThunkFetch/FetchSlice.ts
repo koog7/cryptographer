@@ -2,28 +2,44 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import axiosAPI from "../../axios/AxiosAPI.ts";
 
 interface Crypto {
-    encode: string;
-    decode: string;
+    encodeMessage: string;
+    decodeMessage: string;
     loading: boolean;
     error: boolean;
 }
 
 const initialState: Crypto = {
-    encode: '',
-    decode: '',
+    encodeMessage: '',
+    decodeMessage: '',
     loading: false,
     error: false,
 };
 
 export const encodePost = createAsyncThunk<string, { password: string; encode: string }>(
-    'crypto/sendPostRequest',
+    'crypto/encodePost',
     async ({ password, encode } ) => {
         try {
             const response = await axiosAPI.post<{ cipherText: string }>('/encode', {
                 password,
                 encode,
             });
+            console.log('encode' , response.data.encodeText)
             return response.data.encodeText;
+        } catch (error) {
+            return error.message;
+        }
+    }
+);
+
+export const decodePost = createAsyncThunk<string, { password: string; decode: string }>(
+    'crypto/decodePost',
+    async ({ password, decode } ) => {
+        try {
+            const response = await axiosAPI.post<{ decodedText: string }>('/decode', {
+                password,
+                decode,
+            });
+            return response.data.decodedText;
         } catch (error) {
             return error.message;
         }
@@ -47,9 +63,21 @@ const cryptoSlice = createSlice({
             .addCase(encodePost.fulfilled, (state:Crypto, action: PayloadAction<string>) => {
                 state.loading = false;
                 state.error = false;
-                state.encode = action.payload;
+                state.encodeMessage = action.payload;
             })
             .addCase(encodePost.rejected, (state:Crypto) => {
+                state.loading = false;
+                state.error = true;
+            }).addCase(decodePost.pending, (state:Crypto) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(decodePost.fulfilled, (state:Crypto, action: PayloadAction<string>) => {
+                state.loading = false;
+                state.error = false;
+                state.decodeMessage = action.payload;
+            })
+            .addCase(decodePost.rejected, (state:Crypto) => {
                 state.loading = false;
                 state.error = true;
             });
