@@ -7,7 +7,7 @@ cryptoRouter.use(express.json());
 cryptoRouter.post('/encode', async (req, res) => {
     const { password, encode } = req.body;
 
-    if (password.length === 0  || encode.length === 0) {
+    if (password.trim() === '' || encode.trim() === '') {
         return res.status(400).send('Password and encode text are required');
     }
 
@@ -22,7 +22,7 @@ cryptoRouter.post('/encode', async (req, res) => {
 cryptoRouter.post('/decode', (req, res) => {
     const { password, decode } = req.body;
 
-    if (password.length === 0  || decode.length === 0) {
+    if (password.trim() === '' || decode.trim() === '') {
         return res.status(400).send('Password and encode text are required');
     }
 
