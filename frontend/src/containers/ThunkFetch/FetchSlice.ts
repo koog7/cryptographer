@@ -23,7 +23,6 @@ export const encodePost = createAsyncThunk<string, { password: string; encode: s
                 password,
                 encode,
             });
-            console.log('encode' , response.data.encodeText)
             return response.data.encodeText;
         } catch (error) {
             return error.message;
